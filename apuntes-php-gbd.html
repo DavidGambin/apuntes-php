@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía CRUD PHP: Gestión de Oficinas</title>
+    <style>
+        :root {
+            --bg-body: #1e1e1e;
+            --bg-card: #252526;
+            --text-main: #d4d4d4;
+            --accent: #4caf50; /* Verde para éxito/flujo */
+            --warning: #ce9178; /* Naranja para formularios/html */
+            --code-bg: #101010;
+            --border: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 950px; margin: 0 auto; }
+        
+        h1, h2 { color: white; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        h3 { color: var(--accent); margin-top: 0; }
+
+        /* Tarjetas de Módulos */
+        .module {
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 40px;
+            border-left: 5px solid var(--accent);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            background: #333;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .arrow { margin: 0 15px; color: var(--accent); font-size: 1.2em; }
+        .file-html { color: var(--warning); }
+        .file-php { color: #569cd6; }
+
+        /* Bloques de Código */
+        pre {
+            background-color: var(--code-bg);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            font-family: 'Consolas', monospace;
+        }
+
+        .comment { color: #6a9955; }
+        .php-tag { color: #569cd6; }
+        .str { color: #ce9178; }
+        .func { color: #dcdcaa; }
+        
+        .note {
+            background: rgba(76, 175, 80, 0.1);
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Sistema de Gestión "Jardinería"</h1>
+    <p>Guía basada en los archivos proporcionados, con correcciones de sintaxis y mejoras de seguridad lógica.</p>
+
+    <div class="module">
+        <h3>0. Configuración Global</h3>
+        <p>Este archivo se incluye en todos los scripts para no repetir credenciales.</p>
+        <div class="flow-diagram">
+            <span class="file-php">config3.php</span>
+        </div>
+        <pre><code><span class="php-tag">&lt;?php</span>
+<span class="comment">// Definición de constantes para conexión</span>
+<span class="func">$SERVIDOR</span> = <span class="str">"localhost"</span>;
+<span class="func">$USUARIO</span>  = <span class="str">"paco"</span>;
+<span class="func">$CLAVE</span>    = <span class="str">"alumno"</span>;
+<span class="func">$DATABASE</span> = <span class="str">"jardineria"</span>;
+<span class="php-tag">?></span></code></pre>
+    </div>
+
+    <div class="module">
+        <h3>1. Insertar Oficina (Create)</h3>
+        <div class="flow-diagram">
+            <span class="file-html">insertarOficina.html</span> 
+            <span class="arrow">POST &#10142;</span> 
+            <span class="file-php">insertar3.php</span>
+        </div>
+
+        <div class="note"><strong>Mejora:</strong> Se ha corregido la consulta SQL para especificar las columnas, lo cual evita errores si la estructura de la tabla cambia.</div>
+
+        <pre><code><span class="php-tag">&lt;?php</span>
+<span class="comment">// Verificar que se ha pulsado el botón</span>
+<span class="func">if</span> (<span class="func">isset</span>($_POST[<span class="str">'INSERTAR'</span>])) {
+    
+    <span class="func">include</span>(<span class="str">"config3.php"</span>);
+    <span class="func">$cnx</span> = <span class="func">mysqli_connect</span>($SERVIDOR, $USUARIO, $CLAVE, $DATABASE) <span class="func">or die</span>(<span class="str">"Error DB"</span>);
+
+    <span class="comment">// Recogemos datos del formulario</span>
+    $cod    = $_POST[<span class="str">'codOfi'</span>];
+    $ciudad = $_POST[<span class="str">'ciudadOfi'</span>];
+    $pais   = $_POST[<span class="str">'paisOfi'</span>];
+    $region = $_POST[<span class="str">'regionOfi'</span>];
+    $cp     = $_POST[<span class="str">'cpOfi'</span>];
+    $tlf    = $_POST[<span class="str">'tlfOfi'</span>];
+    $dir1   = $_POST[<span class="str">'dir1Ofi'</span>];
+    $dir2   = $_POST[<span class="str">'dir2Ofi'</span>];
+
+    <span class="comment">// SQL corregido y limpio</span>
+    $sql = <span class="str">"INSERT INTO Oficinas (CodigoOficina, Ciudad, Pais, Region, CodigoPostal, Telefono, LineaDireccion1, LineaDireccion2) 
+            VALUES ('$cod', '$ciudad', '$pais', '$region', '$cp', '$tlf', '$dir1', '$dir2')"</span>;
+
+    <span class="func">mysqli_query</span>($cnx, $sql) <span class="func">or die</span>(<span class="func">mysqli_error</span>($cnx));
+    
+    <span class="func">echo</span> <span class="str">"Registro insertado correctamente."</span>;
+    <span class="func">mysqli_close</span>($cnx);
+
+} <span class="func">else</span> {
+    <span class="func">echo</span> <span class="str">"Acceso no permitido."</span>;
+}
+<span class="php-tag">?></span></code></pre>
+    </div>
+
+    <div class="module">
+        <h3>2. Listar y Ver Detalles (Read)</h3>
+        <p>El listado muestra todas las oficinas y crea enlaces dinámicos para Ver Detalle o Borrar.</p>
+        <div class="flow-diagram">
+            <span class="file-php">listado3.php</span> 
+            <span class="arrow">GET (link) &#10142;</span> 
+            <span class="file-php">ver3.php</span>
+        </div>
+
+        <pre><code><span class="php-tag">&lt;?php</span>
+<span class="comment">// --- EXTRACTO DE LISTADO3.PHP ---</span>
+<span class="func">$sql</span> = <span class="str">"SELECT CodigoOficina, Ciudad FROM Oficinas"</span>;
+<span class="func">$res</span> = <span class="func">mysqli_query</span>($cnx, $sql);
+
+<span class="func">echo</span> <span class="str">"&lt;table border='1'&gt;"</span>;
+<span class="comment">// Usamos fetch_assoc para mayor claridad</span>
+<span class="func">while</span> ($fila = <span class="func">mysqli_fetch_assoc</span>($res)) {
+    <span class="func">echo</span> <span class="str">"&lt;tr&gt;"</span>;
+    <span class="func">echo</span> <span class="str">"&lt;td&gt;"</span> . $fila[<span class="str">'CodigoOficina'</span>] . <span class="str">"&lt;/td&gt;"</span>;
+    <span class="func">echo</span> <span class="str">"&lt;td&gt;"</span> . $fila[<span class="str">'Ciudad'</span>] . <span class="str">"&lt;/td&gt;"</span>;
+    
+    <span class="comment">// Enlaces con parámetros GET</span>
+    <span class="func">echo</span> <span class="str">"&lt;td&gt;&lt;a href='ver3.php?codOficina="</span> . $fila[<span class="str">'CodigoOficina'</span>] . <span class="str">"'&gt;Detalles&lt;/a&gt;&lt;/td&gt;"</span>;
+    <span class="func">echo</span> <span class="str">"&lt;td&gt;&lt;a href='eliminar3.php?codOficina="</span> . $fila[<span class="str">'CodigoOficina'</span>] . <span class="str">"'&gt;Borrar&lt;/a&gt;&lt;/td&gt;"</span>;
+    <span class="func">echo</span> <span class="str">"&lt;/tr&gt;"</span>;
+}
+<span class="func">echo</span> <span class="str">"&lt;/table&gt;"</span>;
+<span class="php-tag">?></span></code></pre>
+    </div>
+
+    <div class="module">
+        <h3>3. Eliminar Oficina (Delete)</h3>
+        <div class="flow-diagram">
+            <span class="file-html">eliminarOficina.html</span> 
+            <span class="arrow">GET &#10142;</span> 
+            <span class="file-php">eliminar3.php</span>
+        </div>
+
+        <pre><code><span class="php-tag">&lt;?php</span>
+<span class="func">if</span> (<span class="func">isset</span>($_GET[<span class="str">'codOficina'</span>])) {
+    <span class="func">include</span>(<span class="str">"config3.php"</span>);
+    <span class="func">$cnx</span> = <span class="func">mysqli_connect</span>($SERVIDOR, $USUARIO, $CLAVE, $DATABASE);
+
+    <span class="comment">// Protegemos la variable (básico)</span>
+    $cod = $_GET[<span class="str">'codOficina'</span>];
+    
+    <span class="func">$sql</span> = <span class="str">"DELETE FROM Oficinas WHERE CodigoOficina = '$cod'"</span>;
+    
+    <span class="func">mysqli_query</span>($cnx, $sql) <span class="func">or die</span>(<span class="func">mysqli_error</span>($cnx));
+    
+    <span class="func">echo</span> <span class="str">"Oficina eliminada: "</span> . $cod;
+    <span class="func">mysqli_close</span>($cnx);
+}
+<span class="php-tag">?></span></code></pre>
+    </div>
+
+    <div class="module">
+        <h3>4. Modificar Datos (Update)</h3>
+        <p>Este es el proceso más complejo: requiere rellenar un formulario con datos existentes y luego guardar los cambios.</p>
+        <div class="flow-diagram">
+            <span class="file-html">editar3.html</span> <span class="arrow">&#10142;</span> 
+            <span class="file-php">editar3.php (Form relleno)</span> <span class="arrow">POST &#10142;</span> 
+            <span class="file-php">actualizar3.php</span>
+        </div>
+
+        <pre><code><span class="php-tag">&lt;?php</span>
+<span class="comment">// --- PARTE 1: actualizar3.php (Recibe los datos modificados) ---</span>
+<span class="func">if</span> (<span class="func">isset</span>($_POST[<span class="str">'MODIFICAR'</span>])) {
+    <span class="func">include</span>(<span class="str">"config3.php"</span>);
+    <span class="func">$cnx</span> = <span class="func">mysqli_connect</span>($SERVIDOR, $USUARIO, $CLAVE, $DATABASE);
+
+    $cod    = $_POST[<span class="str">'codigoOfi'</span>];
+    $ciudad = $_POST[<span class="str">'ciudadOfi'</span>];
+    $pais   = $_POST[<span class="str">'paisOfi'</span>];
+    
+    <span class="comment">// Sentencia UPDATE corregida</span>
+    $sql = <span class="str">"UPDATE Oficinas SET 
+            Ciudad='$ciudad', 
+            Pais='$pais' 
+            WHERE CodigoOficina='$cod'"</span>;
+            
+    <span class="func">mysqli_query</span>($cnx, $sql) <span class="func">or die</span>(<span class="func">mysqli_error</span>($cnx));
+    <span class="func">echo</span> <span class="str">"Registro actualizado."</span>;
+}
+<span class="php-tag">?></span></code></pre>
+    </div>
+
+</div>
+
+</body>
+</html>
