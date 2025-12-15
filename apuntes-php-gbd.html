@@ -3,232 +3,684 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apuntes PHP: Sistema CRUD (Fidelidad Estricta)</title>
+    <title>Curso Completo PHP y MySQL: De Básico a Avanzado</title>
     <style>
         :root {
-            --bg-color: #1e1e1e;
-            --card-bg: #2d2d2d;
-            --text-color: #d4d4d4;
-            --accent: #569cd6; /* Azul PHP */
-            --string: #ce9178;
-            --function: #dcdcaa;
-            --keyword: #c586c0;
-            --html-tag: #808080;
+            --bg-body: #1e1e1e;
+            --bg-card: #252526;
+            --text-main: #e0e0e0;
+            --accent: #4caf50;
+            --code-bg: #101010;
+            --border: #333;
+            --tag: #569cd6;
+            --attr: #9cdcfe;
+            --str: #ce9178;
+            --comment: #6a9955;
+            --php-tag: #c586c0;
         }
 
         body {
-            font-family: 'Consolas', 'Segoe UI', monospace; /* Fuente monoespaciada para sensación técnica */
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
             margin: 0;
             padding: 20px;
+            line-height: 1.6;
         }
 
         .container { max-width: 1000px; margin: 0 auto; }
         
-        h1 { text-align: center; color: #fff; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
-        h2 { color: var(--accent); margin-top: 40px; border-left: 4px solid var(--accent); padding-left: 10px; }
-        h3 { color: #fff; margin-top: 20px; font-size: 1.1em; }
+        h1 { text-align: center; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        h2 { color: #fff; margin-top: 50px; background: #333; padding: 10px; border-radius: 5px; border-left: 5px solid var(--accent); }
+        h3 { color: var(--attr); margin-top: 25px; font-family: monospace; font-size: 1.2em; }
+        
+        .desc { margin-bottom: 15px; color: #bbb; }
 
-        .file-badge {
-            display: inline-block;
-            background: #333;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.8em;
-            color: #aaa;
-            margin-bottom: 5px;
-            border: 1px solid #444;
+        /* Contenedor de código */
+        .file-container {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
         }
 
-        .code-block {
-            background-color: #121212;
+        .file-header {
+            background-color: #333;
+            padding: 8px 15px;
+            font-family: monospace;
+            font-weight: bold;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            margin: 0;
             padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #333;
             overflow-x: auto;
-            white-space: pre;
             font-family: 'Consolas', monospace;
             font-size: 0.9em;
+            color: #d4d4d4;
         }
 
         .explanation {
-            background-color: rgba(255, 255, 255, 0.05);
+            background: rgba(76, 175, 80, 0.1);
             padding: 15px;
-            margin-top: 10px;
             border-radius: 5px;
+            margin-top: 10px;
+            border-left: 4px solid var(--accent);
         }
 
         ul { margin: 0; padding-left: 20px; }
         li { margin-bottom: 5px; }
 
-        /* Syntax Highlighting */
-        .php { color: var(--accent); }
-        .func { color: var(--function); }
-        .str { color: var(--string); }
-        .kwd { color: var(--keyword); }
+        /* Botón ir arriba */
+        .toc { background: var(--bg-card); padding: 15px; border-radius: 8px; margin-bottom: 30px; }
+        .toc a { color: var(--attr); text-decoration: none; display: block; margin: 5px 0; }
+        .toc a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Apuntes de PHP y MySQL (Basado en Ejercicios)</h1>
-    <p>Análisis de funciones y lógica de los 14 archivos proporcionados.</p>
-
-    <h2>1. Configuración y Conexión</h2>
-    <div class="file-badge">Archivo: config3.php</div>
-    <div class="code-block">
-<span class="php">&lt;?php</span>
-<span class="kwd">$SERVIDOR</span> = <span class="str">"localhost"</span>;
-<span class="kwd">$USUARIO</span> = <span class="str">"paco"</span>;
-<span class="kwd">$CLAVE</span> = <span class="str">"alumno"</span>;
-<span class="kwd">$DATABASE</span> = <span class="str">"jardineria"</span>;
-<span class="php">?&gt;</span>
-    </div>
-    <div class="explanation">
-        <strong>Función:</strong> Almacenar las credenciales en variables.
-        <ul>
-            <li>Este archivo no tiene lógica, solo definición de variables.</li>
-            <li>Se usa posteriormente con <code>include()</code> para no repetir datos.</li>
-        </ul>
-    </div>
-
-    <h2>2. Inserción de Datos (Alta)</h2>
-    <div class="file-badge">Archivos: insertarOficina.html &rarr; insertar3.php</div>
+    <h1>Guía PHP: Acceso a Datos (CRUD)</h1>
     
-    <p>El flujo comienza con un formulario HTML que envía datos por <strong>POST</strong>.</p>
+    <div class="toc">
+        <strong>Índice de Contenidos (De menos a más):</strong>
+        <a href="#nivel1">NIVEL 1: Configuración Básica</a>
+        <a href="#nivel2">NIVEL 2: Listar Datos (Lectura simple)</a>
+        <a href="#nivel3">NIVEL 3: Buscar y Ver Detalles (Lectura específica)</a>
+        <a href="#nivel4">NIVEL 4: Insertar Datos (Crear)</a>
+        <a href="#nivel5">NIVEL 5: Eliminar Datos (Borrar)</a>
+        <a href="#nivel6">NIVEL 6: Modificar Datos (Editar)</a>
+    </div>
 
-    <div class="code-block">
-<span class="kwd">if</span> (<span class="func">isset</span>($_POST[<span class="str">'INSERTAR'</span>])){    
-    <span class="func">include</span> (<span class="str">"config3.php"</span>);
-    <span class="kwd">$cnx</span> = <span class="func">mysqli_connect</span>($SERVIDOR,$USUARIO,$CLAVE,$DATABASE) <span class="kwd">or die</span>(<span class="func">mysqli_error</span>($cnx));
-    
-    <span class="com">// Construcción manual de valores SQL</span>
-    <span class="kwd">$valores</span> = <span class="str">"'"</span>.$_POST[<span class="str">'codOfi'</span>].<span class="str">"',"</span>;
-    <span class="kwd">$valores</span> .= <span class="str">"'"</span>.$_POST[<span class="str">'ciudadOfi'</span>].<span class="str">"',"</span>;
-    <span class="com">// ... (concatenación del resto de campos)</span>
+    <h2 id="nivel1">NIVEL 1: Configuración Básica</h2>
+    <p class="desc">Antes de hacer nada, necesitamos definir las credenciales. Este archivo se incluirá en todos los demás.</p>
 
-    <span class="kwd">$sql</span> = <span class="str">"INSERT INTO Oficinas VALUES($valores)"</span>;
-    <span class="kwd">$res</span> = <span class="func">mysqli_query</span>($cnx,$sql) <span class="kwd">or die</span>(<span class="func">mysqli_error</span>($cnx));
-}
+    <div class="file-container">
+        <div class="file-header">Archivo: config3.php</div>
+        <pre>&lt;?php
+$SERVIDOR = "localhost";//SERVIDOR
+$USUARIO = "paco";                //USUARIO
+$CLAVE = "alumno";                //CONTRASEÑA
+$DATABASE = "jardineria";        //BASE DE DATOS
+?&gt;</pre>
     </div>
     <div class="explanation">
-        <strong>Funciones Clave:</strong>
+        <strong>Análisis:</strong>
+        Simplemente define 4 variables. No conecta todavía, solo guarda la información. Esto es buena práctica para no escribir la contraseña en 10 archivos diferentes.
+    </div>
+
+    <h2 id="nivel2">NIVEL 2: Listar Datos (Lectura)</h2>
+    <p class="desc">Lo más sencillo es leer todo lo que hay en una tabla. Aquí vemos dos formas de hacerlo según tus ejercicios.</p>
+
+    <h3>Forma A: Array estándar</h3>
+    <div class="file-container">
+        <div class="file-header">Archivo: listado2.php</div>
+        <pre>&lt;html&gt;
+	&lt;head&gt;&lt;/head&gt;
+	&lt;body&gt;
+	&lt;h1&gt;Ejemplo para conectar con base de datos&lt;/h1&gt;
+	
+	&lt;?php
+	
+	// Conectar con la base de datos
+      $cnx = mysqli_connect('localhost','paco','alumno','jardineria') or die(mysqli_error($cnx));
+   
+      // Crear el código de la sentencia SQL
+      $consulta = "SELECT codigoOficina, ciudad FROM Oficinas"; 
+      
+      // Ejecutar la consulta
+      $resultado = mysqli_query($cnx,$consulta) or die(mysqli_error($cnx));
+      
+      // Comprobar que devuelve filas
+      if (mysqli_num_rows($resultado)&gt;0){
+      		echo "Filas: ".mysqli_num_rows($resultado);
+      		
+      		// Versión con list
+      		/* while (list($codOfi,$ciudadOfi) = mysqli_fetch_array($resultado)){
+      			echo "CODIGO: ".$codOfi."&lt;br&gt;";
+      			echo "CIUDAD: ".$ciudadOfi."&lt;br&gt;";
+      			echo "---------------------------&lt;br&gt;";
+      		}*/
+      		
+      		// versión sin list
+      		while ($ciudades = mysqli_fetch_array($resultado)){
+      			echo "CODIGO: ".$ciudades['codigoOficina']."&lt;br&gt;";
+      			echo "CIUDAD: ".$ciudades['ciudad']."&lt;br&gt;";
+      			echo "---------------------------&lt;br&gt;";
+      		}
+      }
+      else {
+      
+      		echo "No se ha obtenido ninguna fila";
+      }
+	
+	// liberrar memoria
+	mysqli_free_result($resultado);
+	mysqli_close($cnx);	
+
+	?&gt;
+
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
+    </div>
+
+    <h3>Forma B: Usando la función list()</h3>
+    <p class="desc">Esta versión es ligeramente más avanzada porque muestra los datos en una tabla y crea enlaces para otras acciones.</p>
+    <div class="file-container">
+        <div class="file-header">Archivo: listado3.php</div>
+        <pre>&lt;html&gt;
+	&lt;head&gt;&lt;/head&gt;
+	&lt;body&gt;
+	&lt;h1&gt;Ejemplo para conectar con base de datos&lt;/h1&gt;
+	
+	&lt;?php
+	
+	// Conectar con la base de datos
+      $cnx = mysqli_connect('localhost','paco','alumno','jardineria') or die(mysqli_error($cnx));
+   
+      // Crear el código de la sentencia SQL
+      $consulta = "SELECT codigoOficina, ciudad FROM Oficinas"; 
+      
+      // Ejecutar la consulta
+      $resultado = mysqli_query($cnx,$consulta) or die(mysqli_error($cnx));
+      
+      // Comprobar que devuelve filas
+      if (mysqli_num_rows($resultado)&gt;0){
+      		echo "Filas: ".mysqli_num_rows($resultado);
+      		
+      		// Creamos la cabecera de la tabla
+      		echo "&lt;table border='1'&gt;";
+      		echo "&lt;tr&gt;";
+      		echo "&lt;th&gt;CODIGO&lt;/th&gt;";
+      		echo "&lt;th&gt;CIUDAD&lt;/th&gt;";
+      		echo "&lt;th&gt;VER&lt;/th&gt;";
+      		echo "&lt;th&gt;ELIMINAR&lt;/th&gt;";
+      		echo "&lt;/tr&gt;";
+     		
+      		// Versión con list
+      		while (list($codOfi,$ciudadOfi) = mysqli_fetch_array($resultado)){
+      			echo "&lt;tr&gt;";
+      			echo "&lt;td&gt;".$codOfi."&lt;/td&gt;";
+      			echo "&lt;td&gt;".$ciudadOfi."&lt;/td&gt;";
+      			echo "&lt;td&gt;&lt;a href='ver3.php?codOficina=$codOfi'&gt;Detalles&lt;/a&gt;&lt;/td&gt;";
+      			echo "&lt;td&gt;&lt;a href='eliminar3.php?codOficina=$codOfi'&gt;Borrar&lt;/a&gt;&lt;/td&gt;";
+      			echo "&lt;/tr&gt;";
+      		}
+      		
+      		// Cerramos la tabla
+      		echo "&lt;/table&gt;";
+      		
+
+      }
+      else {
+      
+      		echo "No se ha obtenido ninguna fila";
+      }
+	
+	// liberrar memoria
+	mysqli_free_result($resultado);
+	mysqli_close($cnx);	
+
+	?&gt;
+
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
+    </div>
+    <div class="explanation">
+        <strong>Concepto Nuevo:</strong> <code>while (list($var1, $var2) = mysqli_fetch_array(...))</code>
         <ul>
-            <li><code>isset($_POST['...'])</code>: Verifica si se ha pulsado el botón del formulario.</li>
-            <li><code>include("config3.php")</code>: Carga las variables definidas en el paso 1.</li>
-            <li><code>mysqli_connect(...)</code>: Abre la conexión al servidor MySQL.</li>
-            <li><code>or die(mysqli_error($cnx))</code>: Si falla la instrucción anterior, detiene la ejecución y muestra el error exacto que devuelve MySQL.</li>
-            <li><code>mysqli_query($cnx, $sql)</code>: Envía la sentencia SQL a la base de datos.</li>
+            <li><code>mysqli_fetch_array</code> devuelve la fila actual.</li>
+            <li><code>list()</code> "desempaqueta" esa fila y asigna la columna 0 a <code>$var1</code> y la columna 1 a <code>$var2</code> automáticamente. Es útil para código más corto.</li>
+            <li>Observa cómo se generan enlaces dinámicos: <code>href='ver3.php?codOficina=$codOfi'</code>.</li>
         </ul>
     </div>
 
-    <h2>3. Listados (Lectura)</h2>
-    <div class="file-badge">Archivos: listado2.php, listado3.php</div>
+    <h2 id="nivel3">NIVEL 3: Buscar y Ver Detalles</h2>
+    <p class="desc">Aquí aprendemos a pasar información de una página a otra usando <strong>GET</strong>.</p>
 
-    <p>Estos archivos muestran cómo recuperar datos. Se utilizan dos métodos principales con <code>mysqli_fetch_array</code>.</p>
+    <h3>El Formulario de Búsqueda</h3>
+    <div class="file-container">
+        <div class="file-header">Archivo: buscarOficina.html</div>
+        <pre>&lt;html&gt;
+	&lt;head&gt;
+		&lt;meta charset="UTF-8"/&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+	&lt;h1&gt;BUSCAR OFICINA&lt;/h1&gt;
+	
+	&lt;!-- Formulario Búsqueda por codigo Oficina PK --&gt;
+	&lt;fieldset&gt;
+	&lt;form action="ver3.php" method="GET"&gt;
+		Introduce código de Oficina :
+		&lt;input type="text" name="codOficina"/&gt;
+		&lt;input type="submit" name="BUSCAR" value="Buscar por Código"/&gt;
+	&lt;/form&gt;	
+	&lt;/fieldset&gt;	
 
-    <h3>Método A: Usando list()</h3>
-    <div class="code-block">
-<span class="kwd">while</span> (<span class="func">list</span>($codOfi,$ciudadOfi) = <span class="func">mysqli_fetch_array</span>($resultado)){
-    <span class="func">echo</span> <span class="str">"CODIGO: "</span>.$codOfi.<span class="str">"&lt;br&gt;"</span>;
-}
+	&lt;!-- Formulario Búsqueda de oficinas por pais --&gt;
+	
+	&lt;fieldset&gt;
+	&lt;form action="buscarPais3.php" method="GET"&gt;
+		Introduce el nombre del país :
+		&lt;input type="text" name="paisOfi"/&gt;
+		&lt;input type="submit" name="BUSCAR" value="Buscar por País"/&gt;
+	&lt;/form&gt;	
+	&lt;/fieldset&gt;
+
+	
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
+    </div>
+
+    <h3>Procesar Búsqueda (Ver detalle único)</h3>
+    <div class="file-container">
+        <div class="file-header">Archivo: ver3.php</div>
+        <pre>&lt;html&gt;
+	&lt;head&gt;&lt;/head&gt;
+	&lt;body&gt;
+	&lt;h1&gt;Ejemplo para ver todos los campos de una oficina&lt;/h1&gt;
+	
+	&lt;?php
+	
+	
+     if (isset($_GET['codOficina'])){	
+	
+	// Conectar con la base de datos
+      $cnx = mysqli_connect('localhost','paco','alumno','jardineria') or die(mysqli_error($cnx));
+   
+      // Crear el código de la sentencia SQL
+      $consulta = "SELECT * FROM Oficinas WHERE codigoOficina='".$_GET['codOficina']."'"; 
+      
+      // Ejecutar la consulta
+      $resultado = mysqli_query($cnx,$consulta) or die(mysqli_error($cnx));
+      
+      // Comprobar que devuelve filas
+      if (mysqli_num_rows($resultado)&gt;0){  // Existe la oficina
+      		$ofi = mysqli_fetch_array($resultado);
+      		
+      		echo "&lt;table border='1'&gt;";
+      		echo "&lt;tr&gt;&lt;th&gt;CODIGO&lt;/th&gt;&lt;td&gt;".$ofi['CodigoOficina']."&lt;/td&gt;&lt;/tr&gt;";
+      		echo "&lt;tr&gt;&lt;th&gt;CIUDAD&lt;/th&gt;&lt;td&gt;".$ofi['Ciudad']."&lt;/td&gt;&lt;/tr&gt;";
+      		echo "&lt;tr&gt;&lt;th&gt;PAIS&lt;/th&gt;&lt;td&gt;".$ofi['Pais']."&lt;/td&gt;&lt;/tr&gt;";
+      		echo "&lt;tr&gt;&lt;th&gt;REGION&lt;/th&gt;&lt;td&gt;".$ofi['Region']."&lt;/td&gt;&lt;/tr&gt;";
+      		echo "&lt;tr&gt;&lt;th&gt;COD POSTAL&lt;/th&gt;&lt;td&gt;".$ofi['CodigoPostal']."&lt;/td&gt;&lt;/tr&gt;";
+      		echo "&lt;tr&gt;&lt;th&gt;TELEFONO&lt;/th&gt;&lt;td&gt;".$ofi['Telefono']."&lt;/td&gt;&lt;/tr&gt;";
+      		echo "&lt;tr&gt;&lt;th&gt;DIRECCION1&lt;/th&gt;&lt;td&gt;".$ofi['LineaDireccion1']."&lt;/td&gt;&lt;/tr&gt;";
+      		echo "&lt;tr&gt;&lt;th&gt;DIRECCION2&lt;/th&gt;&lt;td&gt;".$ofi['LineaDireccion2']."&lt;/td&gt;&lt;/tr&gt;";
+      		echo "&lt;/table&gt;";
+      }
+      else{
+      		echo "No existe esa oficina";
+      
+      }
+      
+      
+      
+      
+      	// liberar memoria
+	mysqli_free_result($resultado);
+	mysqli_close($cnx);
+	
+	}
+	
+	else {
+		echo "ERROR: Debe de especificar un código de oficina";
+	}	
+
+	?&gt;
+
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
+    </div>
+
+    <h3>Procesar Búsqueda (Ver lista filtrada)</h3>
+    <div class="file-container">
+        <div class="file-header">Archivo: buscarPais3.php</div>
+        <pre>&lt;html&gt;
+	&lt;head&gt;&lt;/head&gt;
+	&lt;body&gt;
+	&lt;h1&gt;Listado de Oficinas por pais&lt;/h1&gt;
+	
+	&lt;?php
+	
+	if (isset($_GET['paisOfi'])){
+	
+		// Conectar con la base de datos
+	 	include("config3.php");
+	      $cnx = mysqli_connect($SERVIDOR, $USUARIO, $CLAVE, $DATABASE) or die(mysqli_error($cnx));
+	   
+	      // Crear el código de la sentencia SQL
+	      $consulta = "SELECT codigoOficina, ciudad FROM Oficinas WHERE pais LIKE '%".$_GET['paisOfi']."%'"; 
+	      
+	      // Ejecutar la consulta
+	      $resultado = mysqli_query($cnx,$consulta) or die(mysqli_error($cnx));
+	      
+	      // Comprobar que devuelve filas
+	      if (mysqli_num_rows($resultado)&gt;0){
+	      		echo "Filas: ".mysqli_num_rows($resultado);
+	      		
+	      		// Creamos la cabecera de la tabla
+	      		echo "&lt;table border='1'&gt;";
+	      		echo "&lt;tr&gt;";
+	      		echo "&lt;th&gt;CODIGO&lt;/th&gt;";
+	      		echo "&lt;th&gt;CIUDAD&lt;/th&gt;";
+	      		echo "&lt;th&gt;VER&lt;/th&gt;";
+	      		echo "&lt;th&gt;ELIMINAR&lt;/th&gt;";
+	      		echo "&lt;/tr&gt;";
+	     		
+	      		// Versión con list
+	      		while (list($codOfi,$ciudadOfi) = mysqli_fetch_array($resultado)){
+	      			echo "&lt;tr&gt;";
+	      			echo "&lt;td&gt;".$codOfi."&lt;/td&gt;";
+	      			echo "&lt;td&gt;".$ciudadOfi."&lt;/td&gt;";
+	      			echo "&lt;td&gt;&lt;a href='ver3.php?codOficina=$codOfi'&gt;Detalles&lt;/a&gt;&lt;/td&gt;";
+	      			echo "&lt;td&gt;&lt;a href='eliminar3.php?codOficina=$codOfi'&gt;Borrar&lt;/a&gt;&lt;/td&gt;";
+	      			echo "&lt;/tr&gt;";
+	      		}
+	      		
+	      		// Cerramos la tabla
+	      		echo "&lt;/table&gt;";
+	      		
+
+	      }
+	      else {
+	      
+	      		echo "No se ha obtenido ninguna fila";
+	      }
+		
+		// liberrar memoria
+		mysqli_free_result($resultado);
+		mysqli_close($cnx);	
+
+	}
+	else {
+	
+	     echo "ERROR: No se ha pasado un pais";
+	}
+
+	?&gt;
+
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
     </div>
     <div class="explanation">
-        <strong>Explicación:</strong>
+        <strong>Conceptos Nuevos:</strong>
         <ul>
-            <li><code>mysqli_fetch_array($resultado)</code>: Obtiene una fila de resultados como un array (numérico y asociativo mezclado).</li>
-            <li><code>list($var1, $var2)</code>: Asigna las columnas devueltas (en orden 0, 1, 2...) a variables individuales (`$codOfi`, `$ciudadOfi`).</li>
-            <li>Es el método preferido en <code>listado3.php</code>.</li>
+            <li><code>isset($_GET['...'])</code>: Verifica si llegaron datos por la URL.</li>
+            <li><code>LIKE '%...%'</code>: En SQL, permite buscar textos que contengan la palabra (no que sean exactos).</li>
         </ul>
     </div>
 
-    <h3>Método B: Sin list() (Array directo)</h3>
-    <div class="code-block">
-<span class="kwd">while</span> ($ciudades = <span class="func">mysqli_fetch_array</span>($resultado)){
-    <span class="func">echo</span> <span class="str">"CODIGO: "</span>.$ciudades[<span class="str">'codigoOficina'</span>].<span class="str">"&lt;br&gt;"</span>;
-}
+    <h2 id="nivel4">NIVEL 4: Insertar Datos (Crear)</h2>
+    <p class="desc">Para insertar usamos formularios con método <strong>POST</strong> para enviar datos ocultos y más seguros.</p>
+
+    <h3>El Formulario de Alta</h3>
+    <div class="file-container">
+        <div class="file-header">Archivo: insertarOficina.html</div>
+        <pre>&lt;html&gt;
+	&lt;head&gt;&lt;/head&gt;
+	&lt;body&gt;
+	&lt;h1&gt;FORMULARIO DE ALTA DE UNA OFICINA&lt;/h1&gt;
+	&lt;form action="insertar3.php" method="POST"&gt;
+		CODIGO: &lt;input type='text' name="codOfi"&gt;&lt;br&gt;
+		
+		CIUDAD: &lt;input type='text' name="ciudadOfi"/&gt;&lt;br&gt;
+		
+		PAIS: &lt;input type='text' name="paisOfi"/&gt;&lt;br&gt;
+		
+		REGION: &lt;input type='text' name="regionOfi"/&gt;&lt;br&gt;
+		
+		COD POSTAL: &lt;input type='text' name="cpOfi"/&gt;&lt;br&gt;
+
+		TELEFONO: &lt;input type='text' name="tlfOfi"/&gt;&lt;br&gt;
+		
+		DIRECCION1: &lt;input type='text' name="dir1Ofi"/&gt;&lt;br&gt;
+
+		DIRECCION2: &lt;input type='text' name="dir2Ofi"/&gt;&lt;br&gt;
+		
+		&lt;input type="submit" name="INSERTAR" VALUE="Insertar"/&gt;
+
+	&lt;/form&gt;
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
+    </div>
+
+    <h3>Procesar Inserción</h3>
+    <div class="file-container">
+        <div class="file-header">Archivo: insertar3.php</div>
+        <pre>&lt;html&gt;
+
+	&lt;head&gt;&lt;/head&gt;
+	
+	&lt;body&gt;
+	
+     	&lt;?php
+	     if (isset($_POST['INSERTAR'])){	
+		
+		include ("config3.php");
+		$cnx = mysqli_connect($SERVIDOR,$USUARIO,$CLAVE,$DATABASE) or die(mysqli_error($cnx));
+		
+        //$campos = "codigoOfician, ciudad, pais, ...";
+        $valores = "'".$_POST['codOfi']."',";
+        $valores .= "'".$_POST['ciudadOfi']."',";
+        $valores .= "'".$_POST['paisOfi']."',";
+        $valores .= "'".$_POST['regionOfi']."',";
+        $valores .= "'".$_POST['cpOfi']."',";
+        $valores .= "'".$_POST['tlfOfi']."',";
+        $valores .= "'".$_POST['dir1Ofi']."',";
+        $valores .= "'".$_POST['dir2Ofi']."'";
+        $sql = "INSERT INTO Oficinas VALUES($valores)";
+        //echo $sql;
+        
+        $res = mysqli_query($cnx,$sql) or die(mysqli_error($cnx));
+        echo "Registro insertado.&lt;br&gt;";
+        mysqli_close($cnx);		
+	}
+	
+	else {
+	
+		echo "ERROR: tienes que insertar desde el formulario";
+	}
+	?&gt;
+	&lt;/body&gt;	
+&lt;/html&gt;</pre>
     </div>
     <div class="explanation">
-        <strong>Explicación:</strong>
+        <strong>Detalle importante:</strong> <code>$valores .= ...</code>
         <ul>
-            <li>Aquí se accede al dato usando el nombre de la columna entre corchetes, ej: <code>$ciudades['codigoOficina']</code>.</li>
+            <li>El punto (<code>.</code>) es para concatenar (unir textos).</li>
+            <li>El punto y igual (<code>.=</code>) añade texto a lo que ya tenía la variable.</li>
+            <li>Aquí se crea una cadena larga con todos los valores separados por comas para meterla en el SQL.</li>
         </ul>
     </div>
 
-    <h2>4. Búsqueda y Paso de Parámetros</h2>
-    <div class="file-badge">Archivos: buscarOficina.html, buscarPais3.php, ver3.php</div>
+    <h2 id="nivel5">NIVEL 5: Eliminar Datos</h2>
+    <p class="desc">La eliminación es crítica. Se suele pedir el código (PK) para borrar exactamente el registro deseado.</p>
 
-    <p>Se utilizan enlaces o formularios GET para pasar información en la URL (ej: <code>ver3.php?codOficina=MAD-ES</code>).</p>
+    <h3>Formulario de Borrado</h3>
+    <div class="file-container">
+        <div class="file-header">Archivo: eliminarOficina.html</div>
+        <pre>&lt;html&gt;
+	&lt;head&gt;
+		&lt;meta charset="UTF-8"/&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+	&lt;h1&gt;ELIMINAR OFICINA&lt;/h1&gt;
+	
+	&lt;!-- Formulario --&gt;
+	
+	&lt;form action="eliminar3.php" method="GET"&gt;
+		Introduce código de Oficina :
+		&lt;input type="text" name="codOficina"/&gt;
+		&lt;input type="submit" name="ELIMINAR" value="Eliminar"/&gt;
+	&lt;/form&gt;		
+	
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
+    </div>
 
-    <div class="code-block">
-<span class="com">// En buscarPais3.php (Búsqueda por patrón)</span>
-<span class="kwd">$consulta</span> = <span class="str">"SELECT ... FROM Oficinas WHERE pais LIKE '%"</span>.$_GET[<span class="str">'paisOfi'</span>].<span class="str">"%'"</span>;
+    <h3>Procesar Eliminación</h3>
+    <div class="file-container">
+        <div class="file-header">Archivo: eliminar3.php</div>
+        <pre>&lt;html&gt;
 
-<span class="com">// En ver3.php (Búsqueda exacta por PK)</span>
-<span class="kwd">$consulta</span> = <span class="str">"SELECT * FROM Oficinas WHERE codigoOficina='"</span>.$_GET[<span class="str">'codOficina'</span>].<span class="str">"'"</span>;
+	&lt;head&gt;&lt;/head&gt;
+	
+	&lt;body&gt;
+	
+     	&lt;?php
+	     if (isset($_GET['codOficina'])){	
+		
+		include ("config3.php");
+		$cnx = mysqli_connect($SERVIDOR,$USUARIO,$CLAVE,$DATABASE) or die(mysqli_error($cnx));
+		// Conectar con la base de datos
+	       //$cnx = mysqli_connect('localhost','paco','alumno','jardineria') or die(mysqli_error($cnx));
+	   
+	      // Crear el código de la sentencia SQL
+	      $sentencia = "DELETE FROM Oficinas WHERE codigoOficina='".$_GET['codOficina']."'"; 
+	      
+	      // Ejecutar la consulta
+	      $resultado = mysqli_query($cnx,$sentencia) or die(mysqli_error($cnx));
+	
+	      echo "Oficina eliminada: ". $_GET['codOficina'];
+	      
+	       mysqli_close($cnx);
+	       }
+
+	?&gt;
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
+    </div>
+
+    <h2 id="nivel6">NIVEL 6: Modificar Datos (Complejo)</h2>
+    <p class="desc">Este es el proceso más largo. Requiere 3 pasos: (1) Pedir código -> (2) Leer datos y rellenar formulario -> (3) Guardar cambios.</p>
+
+    <h3>Paso 1: Pedir qué editar</h3>
+    <div class="file-container">
+        <div class="file-header">Archivo: editar3.html</div>
+        <pre>&lt;html&gt;
+
+	&lt;head&gt;&lt;/head&gt;
+	
+	
+	&lt;body&gt;
+	&lt;h1&gt;MODIFICAR LOS DATOS DE UNA OFICINA&lt;/h1&gt;
+	
+	&lt;form action="editar3.php" method='GET'&gt;
+		CODIGO OFICINA: &lt;input type="text" name="codOfi"/&gt;
+		&lt;input type="submit" name="EDITAR" value="Editar"/&gt;
+	
+	&lt;/form&gt;
+
+
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
+    </div>
+
+    <h3>Paso 2: Mostrar formulario relleno</h3>
+    <div class="file-container">
+        <div class="file-header">Archivo: editar3.php</div>
+        <pre>&lt;html&gt;
+
+	&lt;head&gt;&lt;/head&gt;
+
+	&lt;body&gt;
+	&lt;h1&gt;MODIFICAR LOS DATOS DE UNA OFICINA&lt;/h1&gt;
+	
+	&lt;?php
+	
+	if (isset($_GET['codOfi'])){
+		
+		// Conectar con la base de datos
+	 	include("config3.php");
+	      $cnx = mysqli_connect($SERVIDOR, $USUARIO, $CLAVE, $DATABASE) or die(mysqli_error($cnx));
+	      
+// Crear el código de la sentencia SQL
+      $consulta = "SELECT * FROM Oficinas WHERE codigoOficina='".$_GET['codOfi']."'"; 
+      
+      // Ejecutar la consulta
+      $resultado = mysqli_query($cnx,$consulta) or die(mysqli_error($cnx));
+      
+      // Comprobar que devuelve filas
+      if (mysqli_num_rows($resultado)&gt;0){  // Existe la oficina
+      		$ofi = mysqli_fetch_array($resultado);
+      		
+      echo "&lt;form action='actualizar3.php' method='POST'&gt;";
+      echo "CODIGO: &lt;input type='text' name='codigoOfi'value='".$ofi['CodigoOficina']."' readonly/&gt;&lt;br&gt;";
+      echo "CIUDAD: &lt;input type='text' name='ciudadOfi' value='".$ofi['Ciudad']."'/&gt;&lt;br&gt;";
+      echo "PAIS: &lt;input type='text' name='paisOfi' value='".$ofi['Pais']."'/&gt;&lt;br&gt;";
+      echo "REGION: &lt;input type='text' name='regionOfi' value='".$ofi['Region']."'/&gt;&lt;br&gt;";
+      echo "COD POSTAL: &lt;input type='text' name='cpOfi' value='".$ofi['CodigoPostal']."'/&gt;&lt;br&gt;";
+      echo "TELEFONO: &lt;input type='text' name='tlfOfi' value='".$ofi['Telefono']."'/&gt;&lt;br&gt;";
+      echo "&lt;input type='submit' name='MODIFICAR' value='Actualizar'/&gt;";
+      echo "&lt;/form&gt;";
+      }
+      
+      else {
+      	echo "ERROR: No existe ninguna oficina con el código especificado";
+      }
+	
+	}
+	else {
+		echo "ERROR: No se ha especificado ningún código de oficina";
+	}
+	
+	?&gt;
+
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
     </div>
     <div class="explanation">
-        <strong>Funciones y Lógica:</strong>
+        <strong>Clave:</strong>
         <ul>
-            <li><code>$_GET['...']</code>: Recoge el dato enviado por la URL o formulario GET.</li>
-            <li><code>LIKE '%...%'</code>: Operador SQL para buscar coincidencias parciales (usado en <code>buscarPais3.php</code>).</li>
-            <li><code>mysqli_num_rows($resultado)</code>: Cuenta cuántas filas devolvió la consulta. Se usa para saber si "Existe la oficina" o "No se obtuvieron resultados".</li>
-            <li><code>mysqli_free_result($resultado)</code>: Libera la memoria ocupada por los datos obtenidos (muy importante y usada en todos los listados).</li>
+            <li>El código de oficina se pone en un input con el atributo <code>readonly</code>. Esto es vital: el usuario puede ver el código pero NO puede modificarlo, ya que es la clave primaria (identificador) y usarla para el <code>WHERE</code> en el siguiente paso.</li>
+            <li>El formulario se genera dentro del PHP usando <code>echo</code>.</li>
         </ul>
     </div>
 
-    <h2>5. Eliminación</h2>
-    <div class="file-badge">Archivos: eliminarOficina.html &rarr; eliminar3.php</div>
-    
-    <div class="code-block">
-<span class="kwd">if</span> (<span class="func">isset</span>($_GET[<span class="str">'codOficina'</span>])){    
-    <span class="com">// ... Conexión ...</span>
-    <span class="kwd">$sentencia</span> = <span class="str">"DELETE FROM Oficinas WHERE codigoOficina='"</span>.$_GET[<span class="str">'codOficina'</span>].<span class="str">"'"</span>; 
-    <span class="kwd">$resultado</span> = <span class="func">mysqli_query</span>($cnx,$sentencia) <span class="kwd">or die</span>(<span class="func">mysqli_error</span>($cnx));
-    <span class="func">echo</span> <span class="str">"Oficina eliminada: "</span>. $_GET[<span class="str">'codOficina'</span>];
-}
-    </div>
-    <div class="explanation">
-        <strong>Flujo:</strong>
-        <ul>
-            <li>Recibe el código por <strong>GET</strong> (desde el enlace en el listado o el formulario).</li>
-            <li>Ejecuta la sentencia SQL <code>DELETE</code>.</li>
-            <li>Cierra la conexión con <code>mysqli_close($cnx)</code>.</li>
-        </ul>
-    </div>
+    <h3>Paso 3: Guardar en Base de Datos</h3>
+    <div class="file-container">
+        <div class="file-header">Archivo: actualizar3.php</div>
+        <pre>&lt;html&gt;
 
-    <h2>6. Edición (Modificación)</h2>
-    <div class="file-badge">Archivos: editar3.html &rarr; editar3.php &rarr; actualizar3.php</div>
-    
-    <p>Este es el proceso más complejo, dividido en 3 pasos (como se ve en tu Gráfico JPG).</p>
+	&lt;head&gt;&lt;/head&gt;
+	
+	&lt;body&gt;
+	
+     	&lt;?php
+	     if (isset($_POST['MODIFICAR'])){	
+		
+		include ("config3.php");
+		$cnx = mysqli_connect($SERVIDOR,$USUARIO,$CLAVE,$DATABASE) or die(mysqli_error($cnx));
+		
 
-    <h3>Paso 1: Seleccionar (editar3.php)</h3>
-    <p>Recibe el código, hace un SELECT y rellena un formulario HTML con los datos actuales.</p>
-    <div class="code-block">
-<span class="kwd">$consulta</span> = <span class="str">"SELECT * FROM Oficinas WHERE codigoOficina='"</span>.$_GET[<span class="str">'codOfi'</span>].<span class="str">"'"</span>; 
-<span class="kwd">$resultado</span> = <span class="func">mysqli_query</span>($cnx,$consulta)...
-<span class="kwd">$ofi</span> = <span class="func">mysqli_fetch_array</span>($resultado);
-
-<span class="func">echo</span> <span class="str">"&lt;form action='actualizar3.php' method='POST'&gt;"</span>;
-<span class="func">echo</span> <span class="str">"CODIGO: &lt;input type='text' name='codigoOfi' value='"</span>.$ofi[<span class="str">'CodigoOficina'</span>].<span class="str">"' readonly/&gt;"</span>;
-    </div>
-
-    <h3>Paso 2: Actualizar (actualizar3.php)</h3>
-    <p>Recibe los datos modificados por POST y ejecuta el UPDATE.</p>
-    <div class="code-block">
-<span class="kwd">$valores</span> = <span class="str">"CodigoOficina='"</span>.$_POST[<span class="str">'codigoOfi'</span>].<span class="str">"',"</span>;
-<span class="kwd">$valores</span> .= <span class="str">"Ciudad='"</span>.$_POST[<span class="str">'ciudadOfi'</span>].<span class="str">"',"</span>;
-<span class="com">// ... concatenación ...</span>
-<span class="kwd">$sql</span> = <span class="str">"UPDATE Oficinas SET $valores WHERE CodigoOficina='"</span>.$_POST[<span class="str">'codigoOfi'</span>].<span class="str">"'"</span>;
-    </div>
-    <div class="explanation">
-        <strong>Detalles:</strong>
-        <ul>
-            <li>El campo 'CodigoOficina' se muestra como <code>readonly</code> en el formulario para evitar que el usuario cambie la clave primaria.</li>
-            <li>En <code>actualizar3.php</code>, se construye la string <code>$valores</code> concatenando campo a campo.</li>
-            <li>Se usa la cláusula <code>WHERE</code> para asegurar que solo se modifica esa oficina específica.</li>
-        </ul>
+        $valores = "CodigoOficina='".$_POST['codigoOfi']."',";
+        $valores .= "Ciudad='".$_POST['ciudadOfi']."',";
+        $valores .= "Pais='".$_POST['paisOfi']."',";
+        $valores .= "Region='".$_POST['regionOfi']."',";
+        $valores .= "CodigoPostal='".$_POST['cpOfi']."',";
+        $valores .= "Telefono='".$_POST['tlfOfi']."'";
+        $sql = "UPDATE Oficinas SET $valores WHERE CodigoOficina='".$_POST['codigoOfi']."'";
+        //echo $sql;
+        
+        $res = mysqli_query($cnx,$sql) or die(mysqli_error($cnx));
+        echo "Registro Actualizado.&lt;br&gt;";
+        mysqli_close($cnx);		
+	}
+	
+	else {
+	
+		echo "ERROR: tienes que insertar desde el formulario";
+	}
+	?&gt;
+	&lt;/body&gt;	
+&lt;/html&gt;</pre>
     </div>
 
 </div>
